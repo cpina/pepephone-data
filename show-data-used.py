@@ -46,6 +46,14 @@ def get_consumption(authorization_code):
     consumption = requests.get("https://services.pepephone.com/v1/consumption/{}".format(authentication["phone"])   , headers=headers)
     return consumption.json()
 
+def calculate_total_data_gb(consumption_json):
+    total = consumption_json["dataFlat"]
+
+    if "bundles" in consumption_json:
+        for bundle in consumption_json["bundles"]:
+            total += bundle["data"]
+
+    return total / 1024
 
 def main():
     if 'REQUEST_METHOD' in os.environ:
@@ -56,19 +64,21 @@ def main():
 
     print()
     dataConsumeAllGb = consumption_json["dataConsumeAll"] / 1024
-    dataTotalGb = consumption_json["dataFlat"] / 1024
+    dataTotalGb = calculate_total_data_gb(consumption_json)
+
+    print("Time        : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     print("GB total    : {:.2f} GB".format(dataTotalGb))
     print("GB used     : {:.2f} GB".format(dataConsumeAllGb))
     print("GB remaining: {:.2f} GB".format(dataTotalGb-dataConsumeAllGb))
     print()
 
-    percentage_used = (dataConsumeAllGb / 23) * 100
+    percentage_used = (dataConsumeAllGb / dataTotalGb) * 100
     print("% Used      : {:.2f}%".format(percentage_used))
 
     now = datetime.datetime.now()
     number_of_days_month = calendar.monthrange(now.year, now.month)[1]
 
-    percentage_month = ((now.day-1) / number_of_days_month) * 100
+    percentage_month = (now.day / number_of_days_month) * 100
     print("% Month     : {:.2f}%".format(percentage_month))
 
 
