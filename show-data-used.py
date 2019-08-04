@@ -46,6 +46,7 @@ def get_consumption(authorization_code):
     consumption = requests.get("https://services.pepephone.com/v1/consumption/{}".format(authentication["phone"])   , headers=headers)
     return consumption.json()
 
+
 def calculate_total_data_gb(consumption_json):
     total = consumption_json["dataFlat"]
 
@@ -63,23 +64,24 @@ def main():
     consumption_json = get_consumption(authorization_code)
 
     print()
-    dataConsumeAllGb = consumption_json["dataConsumeAll"] / 1024
-    dataTotalGb = calculate_total_data_gb(consumption_json)
+    dataConsumeAllGb = (consumption_json["dataConsumeAll"] + consumption_json["dataConsumeRoamingRlah"]) / 1024
+    dataConsumeEuGb = consumption_json["dataConsumeRoamingRlah"] / 1024
+    dataTotalAvailableGb = calculate_total_data_gb(consumption_json)
 
-    print("Time        : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-    print("GB total    : {:.2f} GB".format(dataTotalGb))
-    print("GB used     : {:.2f} GB".format(dataConsumeAllGb))
-    print("GB remaining: {:.2f} GB".format(dataTotalGb-dataConsumeAllGb))
+    print("Time         : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    print("GB total     : {:.2f} GB".format(dataTotalAvailableGb))
+    print("GB used total: {:.2f} GB (EU roaming: {:.2f} GB)".format(dataConsumeAllGb, dataConsumeEuGb))
+    print("GB remaining : {:.2f} GB".format(dataTotalAvailableGb-dataConsumeAllGb))
     print()
 
-    percentage_used = (dataConsumeAllGb / dataTotalGb) * 100
-    print("% Used      : {:.2f}%".format(percentage_used))
+    percentage_used = (dataConsumeAllGb / dataTotalAvailableGb) * 100
+    print("% Used       : {:.2f}%".format(percentage_used))
 
     now = datetime.datetime.now()
     number_of_days_month = calendar.monthrange(now.year, now.month)[1]
 
     percentage_month = (now.day / number_of_days_month) * 100
-    print("% Month     : {:.2f}%".format(percentage_month))
+    print("% Month      : {:.2f}%".format(percentage_month))
 
 
 if __name__ == "__main__":
