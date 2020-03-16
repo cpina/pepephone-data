@@ -71,6 +71,7 @@ def main():
     print("Time         : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     print("GB total     : {:.2f} GB".format(dataTotalAvailableGb))
     print("GB used total: {:.2f} GB (EU roaming: {:.2f} GB)".format(dataConsumeAllGb, dataConsumeEuGb))
+    dataRemaining = dataTotalAvailableGb-dataConsumeAllGb
     print("GB remaining : {:.2f} GB".format(dataTotalAvailableGb-dataConsumeAllGb))
     print()
 
@@ -82,6 +83,9 @@ def main():
 
     percentage_month = (now.day / number_of_days_month) * 100
     print("% Month      : {:.2f}%".format(percentage_month))
+    remaining_days_month = (number_of_days_month - now.day) + 1
+
+    print("GB per day   : {:.2f} GB/day".format(dataRemaining / remaining_days_month))
 
 
 if __name__ == "__main__":
