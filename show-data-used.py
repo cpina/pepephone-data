@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import requests
-import datetime
 import calendar
-import os
 import configparser
+import datetime
+import os
 import pathlib
+
+import requests
 
 
 def read_configuration_authentication():
@@ -30,7 +31,8 @@ def get_authorization_code():
 
     authentication_data = read_configuration_authentication()
     print("Getting authorization code...")
-    payload = {"email": authentication_data["email"], "password": authentication_data["password"], "source": "ECARE_WEB"}
+    payload = {"email": authentication_data["email"], "password": authentication_data["password"],
+               "source": "ECARE_WEB"}
     json_request = requests.post("https://services.pepephone.com/v1/auth", json=payload).json()
     return json_request["jwt"]
 
@@ -43,7 +45,8 @@ def get_consumption(authorization_code):
     print("Getting consumption...")
     headers = {"Authorization": "Bearer {}".format(authorization_code)}
     authentication = read_configuration_authentication()
-    consumption = requests.get("https://services.pepephone.com/v1/consumption/{}".format(authentication["phone"])   , headers=headers)
+    consumption = requests.get("https://services.pepephone.com/v1/consumption/{}".format(authentication["phone"]),
+                               headers=headers)
     return consumption.json()
 
 
@@ -55,6 +58,7 @@ def calculate_total_data_gb(consumption_json):
             total += bundle["data"]
 
     return total / 1024
+
 
 def main():
     if 'REQUEST_METHOD' in os.environ:
@@ -68,24 +72,26 @@ def main():
     dataConsumeEuGb = consumption_json["dataConsumeRoamingRlah"] / 1024
     dataTotalAvailableGb = calculate_total_data_gb(consumption_json)
 
-    print("Time         : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    now = datetime.datetime.now()
+    dataRemaining = dataTotalAvailableGb - dataConsumeAllGb
+    number_of_days_month = calendar.monthrange(now.year, now.month)[1]
+    remaining_days_month = (number_of_days_month - now.day) + 1
+
+    print("Time         : {}".format(now.strftime("%Y-%m-%d %H:%M:%S")))
     print("GB total     : {:.2f} GB".format(dataTotalAvailableGb))
+    print()
     print("GB used total: {:.2f} GB (EU roaming: {:.2f} GB)".format(dataConsumeAllGb, dataConsumeEuGb))
-    dataRemaining = dataTotalAvailableGb-dataConsumeAllGb
-    print("GB remaining : {:.2f} GB".format(dataTotalAvailableGb-dataConsumeAllGb))
+    print("GB used/day  : {:.2f} GB/day".format(dataConsumeAllGb / now.day))
+    print()
+    print("GB remaining : {:.2f} GB".format(dataTotalAvailableGb - dataConsumeAllGb))
+    print("GB remain/day: {:.2f} GB/day".format(dataRemaining / remaining_days_month))
     print()
 
     percentage_used = (dataConsumeAllGb / dataTotalAvailableGb) * 100
     print("% Used       : {:.2f}%".format(percentage_used))
 
-    now = datetime.datetime.now()
-    number_of_days_month = calendar.monthrange(now.year, now.month)[1]
-
     percentage_month = (now.day / number_of_days_month) * 100
     print("% Month      : {:.2f}%".format(percentage_month))
-    remaining_days_month = (number_of_days_month - now.day) + 1
-
-    print("GB per day   : {:.2f} GB/day".format(dataRemaining / remaining_days_month))
 
 
 if __name__ == "__main__":
