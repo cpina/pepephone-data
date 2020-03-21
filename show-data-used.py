@@ -68,26 +68,26 @@ def main():
     consumption_json = get_consumption(authorization_code)
 
     print()
-    dataConsumeAllGb = (consumption_json["dataConsumeAll"] + consumption_json["dataConsumeRoamingRlah"]) / 1024
-    dataConsumeEuGb = consumption_json["dataConsumeRoamingRlah"] / 1024
-    dataTotalAvailableGb = calculate_total_data_gb(consumption_json)
+    data_consume_all_gb = (consumption_json["dataConsumeAll"] + consumption_json["dataConsumeRoamingRlah"]) / 1024
+    data_consume_eu_gb = consumption_json["dataConsumeRoamingRlah"] / 1024
+    data_total_available_gb = calculate_total_data_gb(consumption_json)
 
     now = datetime.datetime.now()
-    dataRemaining = dataTotalAvailableGb - dataConsumeAllGb
+    data_remaining = data_total_available_gb - data_consume_all_gb
     number_of_days_month = calendar.monthrange(now.year, now.month)[1]
     remaining_days_month = (number_of_days_month - now.day) + 1
 
     print("Time         : {}".format(now.strftime("%Y-%m-%d %H:%M:%S")))
-    print("GB total     : {:.2f} GB".format(dataTotalAvailableGb))
+    print("GB total     : {:.2f} GB".format(data_total_available_gb))
     print()
-    print("GB used total: {:.2f} GB (EU roaming: {:.2f} GB)".format(dataConsumeAllGb, dataConsumeEuGb))
-    print("GB used/day  : {:.2f} GB/day".format(dataConsumeAllGb / now.day))
+    print("GB used total: {:.2f} GB (EU roaming: {:.2f} GB)".format(data_consume_all_gb, data_consume_eu_gb))
+    print("GB used/day  : {:.2f} GB/day".format(data_consume_all_gb / now.day))
     print()
-    print("GB remaining : {:.2f} GB".format(dataTotalAvailableGb - dataConsumeAllGb))
-    print("GB remain/day: {:.2f} GB/day".format(dataRemaining / remaining_days_month))
+    print("GB remaining : {:.2f} GB".format(data_total_available_gb - data_consume_all_gb))
+    print("GB remain/day: {:.2f} GB/day".format(data_remaining / remaining_days_month))
     print()
 
-    percentage_used = (dataConsumeAllGb / dataTotalAvailableGb) * 100
+    percentage_used = (data_consume_all_gb / data_total_available_gb) * 100
     print("% Used       : {:.2f}%".format(percentage_used))
 
     percentage_month = (now.day / number_of_days_month) * 100
