@@ -9,7 +9,7 @@ import pathlib
 import requests
 
 
-def read_configuration_authentication():
+def read_configuration():
     config_home = os.path.join(str(pathlib.Path.home()), ".pepephone")
     config_system = os.path.join("/etc", "pepephone")
 
@@ -19,7 +19,28 @@ def read_configuration_authentication():
     else:
         config.read(config_system)
 
-    return config["authentication"]
+    return config
+
+
+def read_configuration_authentication():
+    return read_configuration()["authentication"]
+
+
+def read_configuration_extra():
+    configuration = read_configuration()
+    if 'extra' in configuration:
+        return configuration['extra']
+    else:
+        return None
+
+
+def read_configuration_extra_GB():
+    configuration_extra = read_configuration_extra()
+
+    if configuration_extra and 'extra_GB' in configuration_extra:
+        return int(configuration_extra['extra_GB'])
+    else:
+        return 0
 
 
 def get_authorization_code():
@@ -77,8 +98,16 @@ def main():
     number_of_days_month = calendar.monthrange(now.year, now.month)[1]
     remaining_days_month = (number_of_days_month - now.day) + 1
 
+    extra_GB = read_configuration_extra_GB()
+    if extra_GB > 0:
+        extra_message = f'(Including extra {extra_GB} GB)'
+    else:
+        extra_message = ''
+
+    data_total_available_gb += extra_GB
+
     print("Time         : {}".format(now.strftime("%Y-%m-%d %H:%M:%S")))
-    print("GB total     : {:.2f} GB".format(data_total_available_gb))
+    print("GB total     : {:.2f} GB {}".format(data_total_available_gb, extra_message))
     print()
     print("GB used total: {:.2f} GB (EU roaming: {:.2f} GB)".format(data_consume_all_gb, data_consume_eu_gb))
     print("GB used/day  : {:.2f} GB/day".format(data_consume_all_gb / now.day))
