@@ -93,11 +93,6 @@ def main():
     data_consume_eu_gb = consumption_json["dataConsumeRoamingRlah"] / 1024
     data_total_available_gb = calculate_total_data_gb(consumption_json)
 
-    now = datetime.datetime.now()
-    data_remaining = data_total_available_gb - data_consume_all_gb
-    number_of_days_month = calendar.monthrange(now.year, now.month)[1]
-    remaining_days_month = (number_of_days_month - now.day) + 1
-
     extra_GB = read_configuration_extra_GB()
     if extra_GB > 0:
         extra_message = f'(Including extra {extra_GB} GB)'
@@ -105,6 +100,11 @@ def main():
         extra_message = ''
 
     data_total_available_gb += extra_GB
+
+    now = datetime.datetime.now()
+    data_remaining = data_total_available_gb - data_consume_all_gb
+    number_of_days_month = calendar.monthrange(now.year, now.month)[1]
+    remaining_days_month = (number_of_days_month - now.day) + 1
 
     print("Time         : {}".format(now.strftime("%Y-%m-%d %H:%M:%S")))
     print("GB total     : {:.2f} GB {}".format(data_total_available_gb, extra_message))
