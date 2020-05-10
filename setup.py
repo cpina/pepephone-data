@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pepephone-data',
-    version='1.0.3',
+    version='1.0.5',
     author='Carles Pina i Estany',
     author_email='carles@pina.cat',
     description='Shows Pepephone used and available data',
