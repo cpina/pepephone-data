@@ -1,3 +1,6 @@
+[![Pypi](https://img.shields.io/pypi/v/pepephone-data)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # pepephone-data
 English Below
 
