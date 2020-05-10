@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='data_usage',
-    version='1.0.0',
+    name='pepephone-data',
+    version='1.0.2',
     author='Carles Pina i Estany',
     author_email='carles@pina.cat',
     description='Shows Pepephone used and available data',
@@ -20,5 +20,5 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=['requests'],
-    scripts=['bin/data_usage']
+    scripts=['bin/pepephone-data']
 )
